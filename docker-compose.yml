@@ -1,0 +1,13 @@
+#docker run --name postgresql bitnami/postgresql:latest
+
+
+services:
+  espetaria:
+    image: "bitnami/postgresql:latest"
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRESQL_USERNAME=wendel
+      - POSTGRESQL_PASSWORD=61427858
+      - POSTGRESQL_DATABASE=mistergrill
+ 

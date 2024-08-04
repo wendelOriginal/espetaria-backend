@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Functionaries {
+  id            String   @id @default(uuid())
+  name          String
+  phone         String   @unique
+  active        Boolean  @default(true)
+  password_hash String
+  create_at     DateTime @default(now())
+  teams         Teams    @relation(fields: [teams_id], references: [id])
+  teams_id      String
+  Sales         Sales[]
+
+  @@map("functionaries")
+}
+
+model Teams {
+  id            String          @id @default(uuid())
+  name          String          @unique
+  Functionaries Functionaries[]
+  Events        Events[]
+
+  @@map("teams")
+}
+
+model Events {
+  id         String  @id @default(uuid())
+  name       String
+  start_date String
+  status     Boolean @default(true)
+  teams      Teams   @relation(fields: [teams_id], references: [id])
+  teams_id   String
+  address    Address @relation(fields: [address_id], references: [id])
+  address_id String
+  box        Box     @relation(fields: [box_id], references: [id])
+  box_id     String
+  goods      Goods   @relation(fields: [goods_id], references: [id])
+  goods_id   String
+
+  @@map("events")
+}
+
+model Address {
+  id      String   @id @default(uuid())
+  address String
+  Events  Events[]
+
+  @@map("address")
+}
+
+model Box {
+  id            String          @id @default(uuid())
+  type          String
+  total         Decimal
+  Box_has_Sales Box_has_Sales[]
+  Events        Events[]
+
+  @@map("box")
+}
+
+model Box_has_Sales {
+  id       String @id @default(uuid()) @ignore
+  box      Box    @relation(fields: [box_id], references: [id])
+  sales    Sales  @relation(fields: [sales_id], references: [id])
+  box_id   String
+  sales_id String
+
+  @@map("box_has_sales")
+}
+
+model Sales {
+  id               String            @id @default(uuid())
+  command          Int               @default(autoincrement())
+  client           String
+  payment          String
+  total            Decimal
+  create_at        DateTime
+  Box_has_Sales    Box_has_Sales[]
+  Sales_has_Goods  Sales_has_Goods[]
+  functionaries    Functionaries     @relation(fields: [functionaries_id], references: [id])
+  functionaries_id String
+
+  @@map("sales")
+}
+
+model Sales_has_Goods {
+  id       String @id @default(uuid()) @ignore
+  sales    Sales  @relation(fields: [sales_id], references: [id])
+  sales_id String
+  goods    Goods  @relation(fields: [goods_id], references: [id])
+  goods_id String
+
+  @@map("sales_has_goods")
+}
+
+model Category {
+  id    String  @id @default(uuid())
+  name  String
+  Goods Goods[]
+}
+
+model Goods {
+  id              String            @id @default(uuid())
+  name            String
+  description     String
+  value           Decimal
+  amount          Int
+  category        Category          @relation(fields: [categoryId], references: [id])
+  categoryId      String
+  Sales_has_Goods Sales_has_Goods[]
+  Events          Events[]
+
+  @@map("goods")
+}
