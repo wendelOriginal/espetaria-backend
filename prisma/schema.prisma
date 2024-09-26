@@ -3,26 +3,26 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model Functionaries {
-  id            String   @id @default(uuid())
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
   name          String
   phone         String   @unique
   active        Boolean  @default(true)
   password_hash String
   create_at     DateTime @default(now())
   teams         Teams    @relation(fields: [teams_id], references: [id])
-  teams_id      String
+  teams_id      String   @db.ObjectId
   Sales         Sales[]
 
   @@map("functionaries")
 }
 
 model Teams {
-  id            String          @id @default(uuid())
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
   name          String          @unique
   Functionaries Functionaries[]
   Events        Events[]
@@ -31,24 +31,24 @@ model Teams {
 }
 
 model Events {
-  id         String  @id @default(uuid())
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
   name       String
   start_date String
   status     Boolean @default(true)
   teams      Teams   @relation(fields: [teams_id], references: [id])
-  teams_id   String
+  teams_id   String  @db.ObjectId
   address    Address @relation(fields: [address_id], references: [id])
-  address_id String
+  address_id String  @db.ObjectId
   box        Box     @relation(fields: [box_id], references: [id])
-  box_id     String
+  box_id     String  @db.ObjectId
   goods      Goods   @relation(fields: [goods_id], references: [id])
-  goods_id   String
+  goods_id   String  @db.ObjectId
 
   @@map("events")
 }
 
 model Address {
-  id      String   @id @default(uuid())
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
   address String
   Events  Events[]
 
@@ -56,9 +56,9 @@ model Address {
 }
 
 model Box {
-  id            String          @id @default(uuid())
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
   type          String
-  total         Decimal
+  total         Float
   Box_has_Sales Box_has_Sales[]
   Events        Events[]
 
@@ -66,54 +66,56 @@ model Box {
 }
 
 model Box_has_Sales {
-  id       String @id @default(uuid()) @ignore
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
   box      Box    @relation(fields: [box_id], references: [id])
   sales    Sales  @relation(fields: [sales_id], references: [id])
-  box_id   String
-  sales_id String
+  box_id   String @db.ObjectId
+  sales_id String @db.ObjectId
 
   @@map("box_has_sales")
 }
 
 model Sales {
-  id               String            @id @default(uuid())
-  command          Int               @default(autoincrement())
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
+  command          Int
   client           String
   payment          String
-  total            Decimal
+  total            Float
   create_at        DateTime
   Box_has_Sales    Box_has_Sales[]
   Sales_has_Goods  Sales_has_Goods[]
   functionaries    Functionaries     @relation(fields: [functionaries_id], references: [id])
-  functionaries_id String
+  functionaries_id String            @db.ObjectId
 
   @@map("sales")
 }
 
 model Sales_has_Goods {
-  id       String @id @default(uuid()) @ignore
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
   sales    Sales  @relation(fields: [sales_id], references: [id])
-  sales_id String
+  sales_id String @db.ObjectId
   goods    Goods  @relation(fields: [goods_id], references: [id])
-  goods_id String
+  goods_id String @db.ObjectId
 
   @@map("sales_has_goods")
 }
 
 model Category {
-  id    String  @id @default(uuid())
+  id    String  @id @default(auto()) @map("_id") @db.ObjectId
   name  String
   Goods Goods[]
+
+  @@map("category")
 }
 
 model Goods {
-  id              String            @id @default(uuid())
+  id              String            @id @default(auto()) @map("_id") @db.ObjectId
   name            String
   description     String
-  value           Decimal
+  value           Float
   amount          Int
   category        Category          @relation(fields: [categoryId], references: [id])
-  categoryId      String
+  categoryId      String            @db.ObjectId
   Sales_has_Goods Sales_has_Goods[]
   Events          Events[]
 

@@ -15,7 +15,7 @@ services:
     image: node:latest
     container_name: node-app
     working_dir: /app
-    command: bash -c "npm install && npx tsup src --out-dir build && node build/server.ts"
+    command: bash -c "npm install && npx tsup src --out-dir build && node build/server.js"
     environment:
       - MONGO_URL=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongodb:${MONGO_PORT}/${MONGO_DB}
       - NODE_ENV=${NODE_ENV}
