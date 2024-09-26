@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start:dev": "tsx watch src/server.ts",
+    "start:dev": "tsx watch src/server.js",
     "build": "tsup src --out-dir build",
     "start": "npx tsup src --out-dir build && node build/server.js",
     "test": "vitest run",
